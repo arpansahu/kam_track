@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kam-track-mac-app
+  labels:
+    app: kam-track-mac
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kam-track-mac
+  template:
+    metadata:
+      labels:
+        app: kam-track-mac
+    spec:
+      imagePullSecrets:
+        - name: harbor-registry-secret
+      containers:
+        - image: harbor.arpansahu.me/library/kam_track_mac:latest
+          name: kam-track-mac
+          envFrom:
+            - secretRef:
+                name: kam-track-secret
+          ports:
+            - containerPort: 8002
+              name: daphne
+  revisionHistoryLimit: 0
