@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h2 class="mb-4">Interaction List</h2>
+
+    <!-- Search and Filter Form -->
+    <form method="GET" action="{% url 'interaction-list' %}">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="lead_name">Lead Name</label>
+                <input type="text" class="form-control autocomplete-input" id="lead_name" name="lead_name" placeholder="Search by Lead Name">
+                <ul class="autocomplete-result-list"></ul>
+            </div>
+            <div class="col-md-4">
+                <label for="interaction_type">Interaction Type</label>
+                <select name="interaction_type" id="interaction_type" class="form-select">
+                    <option value="">All Types</option>
+                    <option value="call">Call</option>
+                    <option value="meeting">Meeting</option>
+                    <option value="order">Order</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="interaction_date">Date Range</label>
+                <input type="text" class="form-control datetimepicker" name="interaction_date" placeholder="Select Date Range">
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-success">Filter</button>
+        </div>
+    </form>
+
+    <!-- Interaction List Table -->
+    <div class="mt-4">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Lead Name</th>
+                    <th>Interaction Type</th>
+                    <th>Details</th>
+                    <th>Interaction Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for interaction in interactions %}
+                    <tr>
+                        <td>{{ interaction.lead.name }}</td>
+                        <td>{{ interaction.get_interaction_type_display }}</td>
+                        <td>{{ interaction.details }}</td>
+                        <td>{{ interaction.interaction_date|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <a href="{% url 'interaction-detail' interaction.id %}" class="btn btn-info btn-sm">View</a>
+                            <a href="{% url 'interaction-update' interaction.id %}" class="btn btn-warning btn-sm">Edit</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No interactions found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="{% static 'js/autocomplete.js' %}"></script>
+<script>
+    new Autocomplete('#lead_name', {
+        search: input => {
+            const url = "{% url 'autocomplete-lead-name' %}?lead_name=" + input;
+            return fetch(url).then(res => res.json()).then(data => data.data);
+        }
+    });
+
+    flatpickr(".datetimepicker", {
+        mode: "range",
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+    });
+</script>
+{% endblock %}

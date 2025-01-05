@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center">Welcome to the KAM Dashboard</h2>
+        </div>
+    </div>
+
+    <!-- Quick Actions Section -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <a href="{% url 'lead-add' %}" class="btn bg-gradient-primary w-100">Add New Lead</a>
+        </div>
+        <div class="col-md-4">
+            {% if well_performing_leads|length > 0 %}
+                <!-- Button to add an interaction for the first available lead -->
+                <a href="{% url 'interaction-add' well_performing_leads.0.id %}" class="btn bg-gradient-info w-100">Add Interaction</a>
+            {% else %}
+                <button class="btn bg-gradient-info w-100 disabled" title="Please add a lead first">Add Interaction</button>
+            {% endif %}
+        </div>
+        <div class="col-md-4">
+            {% if well_performing_leads|length > 0 %}
+                <!-- Button to create a task for the first available lead -->
+                <a href="{% url 'task-add' well_performing_leads.0.id %}" class="btn bg-gradient-success w-100">Create Task</a>
+            {% else %}
+                <button class="btn bg-gradient-success w-100 disabled" title="Please add a lead first">Create Task</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Pending Tasks -->
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <h4 class="mb-4">Pending Tasks</h4>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    {% if pending_tasks %}
+                        <ul class="list-group">
+                            {% for task in pending_tasks %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ task.task_type|capfirst }} for <strong>{{ task.lead.name }}</strong>
+                                    <span class="badge bg-primary">{{ task.due_date|date:"M d, Y" }}</span>
+                                    <a href="{% url 'task-detail' task.id %}" class="btn btn-sm btn-info">View</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No pending tasks. You're all caught up!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Interactions -->
+        <div class="col-md-6">
+            <h4 class="mb-4">Recent Interactions</h4>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    {% if recent_interactions %}
+                        <ul class="list-group">
+                            {% for interaction in recent_interactions %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ interaction.interaction_type|capfirst }} with <strong>{{ interaction.lead.name }}</strong>
+                                    <span class="badge bg-secondary">{{ interaction.interaction_date|date:"M d, Y H:i" }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No recent interactions recorded in the past 7 days.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Overview -->
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <h4 class="mb-4">Well-Performing Accounts</h4>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    {% if well_performing_leads %}
+                        <ul class="list-group">
+                            {% for lead in well_performing_leads %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ lead.name }}
+                                    <span class="badge bg-success">Active</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No well-performing accounts in the past month.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h4 class="mb-4">Underperforming Accounts</h4>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    {% if underperforming_leads %}
+                        <ul class="list-group">
+                            {% for lead in underperforming_leads %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ lead.name }}
+                                    <span class="badge bg-danger">Inactive</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Great job! No underperforming accounts detected.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

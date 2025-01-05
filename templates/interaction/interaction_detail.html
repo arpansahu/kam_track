@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid py-4 d-flex justify-content-center">
+    <div class="col-md-10">
+        <div class="container mt-4">
+            <h2 class="text-center">Interaction Details</h2>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm mb-4 p-3">
+                        <h4 class="card-title">Call Information</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item"><strong>Lead Name:</strong> {{ interaction.lead.name }}</li>
+                            <li class="list-group-item"><strong>Interaction Type:</strong> {{ interaction.get_interaction_type_display }}</li>
+                            <li class="list-group-item"><strong>Details:</strong> {{ interaction.details }}</li>
+                            <li class="list-group-item"><strong>Recorded By:</strong> {{ interaction.created_by.username }}</li>
+                            <li class="list-group-item"><strong>Created On:</strong> {{ interaction.created|date:"M d, Y H:i" }}</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'interaction_list' %}" class="btn btn-magenta">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

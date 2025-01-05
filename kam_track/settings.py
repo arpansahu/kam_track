@@ -93,6 +93,11 @@ INSTALLED_APPS = [
     'custom_tag_app',
     'emails_manager',
     'celery_progress_custom_app',
+
+    'lead',
+    'interaction',
+    'performance',
+    'dashboard',
 ]
 
 MIDDLEWARE = [

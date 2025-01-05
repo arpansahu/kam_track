@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} No Account Assigned {% endblock title %}
+
+{% block stylesheets %}
+<style>
+    .center-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+    }
+
+    .card {
+        padding: 2rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .btn-home {
+        background-color: #D63384;
+        color: white;
+        text-transform: uppercase;
+        padding: 10px 30px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .btn-home:hover {
+        background-color: #C03076;
+        color: #fff;
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="center-container">
+    <div class="card">
+        <h3>No Account Manager Assigned</h3>
+        <p>{{ message|default:"You do not have an assigned Key Account Manager or Lead." }}</p>
+        <p>Please contact support or the system administrator for assistance.</p>
+
+        <a href="{% url 'home' %}" class="btn btn-home mt-4">Go to Homepage</a>
+    </div>
+</div>
+{% endblock %}

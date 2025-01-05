@@ -64,7 +64,7 @@ def get_otp_view(request):
         message = None
         otp = None
         status_code = None
-        subject = 'One Time Password for Contacting on scrapeoptimus.com'
+        subject = 'One Time Password for Contacting on kam-track.arpansahu.me'
 
         if email_status_obj and email_status_obj.count >= 5:
             status_code = 400
@@ -94,7 +94,7 @@ def get_otp_view(request):
                     {
                         "From": {
                             "Email": settings.MAIL_JET_VERIFICATION_EMAIL,
-                            "Name": "scrapeoptimus.com"
+                            "Name": "kam-track.arpansahu.me"
                         },
                         "To": [
                             {

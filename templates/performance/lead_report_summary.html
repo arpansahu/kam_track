@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+    <h2 class="mb-4">Lead Report Summary</h2>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Report Date</th>
+                <th>Total Leads</th>
+                <th>Converted Leads</th>
+                <th>Lost Leads</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for summary in lead_summaries %}
+                <tr>
+                    <td>{{ summary.report_date|date:"M d, Y" }}</td>
+                    <td>{{ summary.total_leads }}</td>
+                    <td>{{ summary.converted_leads }}</td>
+                    <td>{{ summary.lost_leads }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No lead report summaries found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

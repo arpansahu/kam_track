@@ -48,6 +48,12 @@ urlpatterns = [
     path('django-admin/', admin.site.urls, name='admin'),
 
     path('', home_view, name='home'),
+
+    path('leads/', include('lead.urls')),
+    path('interactions/', include('interaction.urls')),
+    path('performance/', include('performance.urls')),
+    path('dashboard/', include('dashboard.urls')),
+
     path('contact/', contact_view, name='contact'),
     path('get-otp', get_otp_view, name='get-otp'),
 

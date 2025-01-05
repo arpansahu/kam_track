@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-
+from kam_track.models import AbstractBaseModel
 class MyAccountManager(BaseUserManager):
     def create_user(self, email, username, password=None):
         if not email:
@@ -65,3 +65,12 @@ class Account(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
+
+class LeadAssignmentHistory(AbstractBaseModel):
+    lead = models.ForeignKey('lead.Lead', on_delete=models.CASCADE, related_name='assignment_history')
+    previous_kam = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, related_name='previous_assignments')
+    new_kam = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='new_assignments')
+    change_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.lead.name}: Changed to {self.new_kam.username} on {self.change_date}"

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+    <h2>Task List</h2>
+
+    <!-- Search and Filter Form -->
+    <form method="GET" action="{% url 'task-list' %}">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="lead_name">Lead Name</label>
+                <input type="text" class="form-control autocomplete-input" id="lead_name" name="lead_name" placeholder="Search by Lead Name">
+                <ul class="autocomplete-result-list"></ul>
+            </div>
+            <div class="col-md-4">
+                <label for="task_type">Task Type</label>
+                <select name="task_type" id="task_type" class="form-select">
+                    <option value="">All Types</option>
+                    <option value="call">Call</option>
+                    <option value="meeting">Meeting</option>
+                    <option value="follow-up">Follow-up</option>
+                </select>
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-success">Filter</button>
+        </div>
+    </form>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>Lead Name</th>
+                <th>Task Type</th>
+                <th>Due Date</th>
+                <th>Completed</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.lead.name }}</td>
+                    <td>{{ task.get_task_type_display }}</td>
+                    <td>{{ task.due_date }}</td>
+                    <td>
+                        {% if task.completed %}
+                            <span class="badge bg-success">Yes</span>
+                        {% else %}
+                            <span class="badge bg-warning">No</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'task-update' task.id %}" class="btn btn-warning btn-sm">Edit</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No tasks found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
