@@ -397,7 +397,7 @@ LOGGING = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://scrapeoptimus.com',
+    'https://kam-track.arpansahu.me',
     "https://79a8-2405-201-303a-10d5-85dd-5d2a-8fcb-2675.ngrok-free.app",
     'https://api.razorpay.com',        # Production
 ]

@@ -218,7 +218,7 @@ class PasswordResetForm(forms.Form):
                 {
                     "From": {
                         "Email": settings.MAIL_JET_VERIFICATION_EMAIL,
-                        "Name": "Scrape Optimus"
+                        "Name": "Kam Track"
                     },
                     "To": [
                         {

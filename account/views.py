@@ -104,7 +104,7 @@ def send_mail_account_activate(reciever_email, user, request, SUBJECT="Confirm Y
             {
                 "From": {
                     "Email": settings.MAIL_JET_VERIFICATION_EMAIL,
-                    "Name": "Scrape Optimus"
+                    "Name": "Kam Track"
                 },
                 "To": [
                     {
@@ -166,7 +166,6 @@ class RegistrationView(View):
 
             # Link free subscriptions to the newly created user
             account_manager = MyAccountManager()
-            account_manager.link_free_subscriptions(account)
 
             email = form.cleaned_data.get('email')
             send_mail_account_activate(email, account, request)
