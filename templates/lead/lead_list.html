@@ -22,32 +22,51 @@
                         <div class="row">
                             <!-- Lead Name Autocomplete -->
                             <div class="col-md-4 mb-md-0 mb-4">
-                                <label>Enter Lead Name</label>
-                                <input class="form-control" name="lead_name" id="lead_name" placeholder="Search Lead Name..." value="{{ lead_name }}">
+                                <div id="autocomplete-lead-name" class="autocomplete">
+                                    <div class="col-6 d-flex align-items-center" style="margin: 5px">
+                                        <h6 class="mb-0">Enter Lead</h6>
+                                    </div>
+                                    <input class="autocomplete-input" name="lead_name" id="lead_name" value="{{ lead_name }}" placeholder="Search Role..."/>
+                                    <ul class="autocomplete-result-list"></ul>
+                                </div>
                             </div>
 
                             <!-- Company Name Autocomplete -->
                             <div class="col-md-4 mb-md-0 mb-4">
-                                <label>Enter Company</label>
-                                <input class="form-control" name="company_name" id="company_name" placeholder="Search Company..." value="{{ company_name }}">
+                                <div id="autocomplete-company-name" class="autocomplete">
+                                    <div class="col-6 d-flex align-items-center" style="margin: 5px">
+                                        <h6 class="mb-0">Enter Company Name</h6>
+                                    </div>
+                                    <input class="autocomplete-input" name="company_name" id="company_name" value="{{ company_name }}" placeholder="Search Company Name..."/>
+                                    <ul class="autocomplete-result-list"></ul>
+                                </div>
                             </div>
 
-                            <!-- Assigned KAM -->
+                            <!-- Status Dropdown -->
                             <div class="col-md-4 mb-md-0 mb-4">
-                                <label>Assigned Key Account Manager (KAM)</label>
-                                <input class="form-control" name="assigned_kam" id="assigned_kam" placeholder="Search KAM..." value="{{ assigned_kam }}">
+                                <label>Status</label>
+                                <select class="form-select" name="status">
+                                    <option value="">All Statuses</option>
+                                    <option value="new" {% if status == 'new' %}selected{% endif %}>New</option>
+                                    <option value="contacted" {% if status == 'contacted' %}selected{% endif %}>Contacted</option>
+                                    <option value="in_progress" {% if status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                    <option value="converted" {% if status == 'converted' %}selected{% endif %}>Converted</option>
+                                    <option value="lost" {% if status == 'lost' %}selected{% endif %}>Lost</option>
+                                </select>
                             </div>
 
-                            <!-- Date Filters -->
-                            <div class="col-md-4">
+                            <!-- Start Date -->
+                            <div class="col-md-4 mb-md-0 mb-4">
                                 <label>Start Date</label>
-                                <input class="form-control datetimepicker" id="start_date" name="start_date" placeholder="Start Date" value="{{ start_date }}">
+                                <input class="form-control datetimepicker" name="start_date" id="start_date" placeholder="Start Date" value="{{ start_date }}">
                             </div>
 
-                            <div class="col-md-4">
+                            <!-- End Date -->
+                            <div class="col-md-4 mb-md-0 mb-4">
                                 <label>End Date</label>
-                                <input class="form-control datetimepicker" id="end_date" name="end_date" placeholder="End Date" value="{{ end_date }}">
+                                <input class="form-control datetimepicker" name="end_date" id="end_date" placeholder="End Date" value="{{ end_date }}">
                             </div>
+
                         </div>
                     </div>
 
@@ -75,7 +94,6 @@
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">Lead Name</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">Company</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">Status</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">Assigned KAM</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder">Created Date</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder">Actions</th>
                                 </tr>
@@ -86,19 +104,19 @@
                                         <td>{{ lead.name }}</td>
                                         <td>{{ lead.company_name }}</td>
                                         <td>
-                                            <span class="badge {% if lead.status == 'active' %}bg-gradient-success{% else %}bg-gradient-secondary{% endif %}">
+                                            <span class="badge {% if lead.lead_status == 'converted' %}bg-gradient-success{% else %}bg-gradient-secondary{% endif %}">
                                                 {{ lead.get_lead_status_display }}
                                             </span>
                                         </td>
-                                        <td>{{ lead.assigned_kam.username }}</td>
                                         <td class="text-center">{{ lead.created|date:"M d, Y H:i" }}</td>
                                         <td class="text-center">
                                             <a href="{% url 'lead-detail' lead.id %}" class="btn btn-info btn-sm">View</a>
                                             <a href="{% url 'lead-update' lead.id %}" class="btn btn-warning btn-sm">Edit</a>
-                                            {% comment %} <button type="button" class="btn btn-danger btn-sm delete-lead" data-id="{{ lead.id }}" data-url="{% url 'lead-delete' lead.id %}">
-                                                Delete
-                                            </button> {% endcomment %}
                                         </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No leads found.</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -115,41 +133,45 @@
 {% endblock %}
 
 {% block javascripts %}
+<script src="{% static 'js/autocomplete.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    // Initialize flatpickr for date and time selection
     flatpickr(".datetimepicker", {
         enableTime: false,
         dateFormat: "Y-m-d",
     });
 
-    $(document).ready(function() {
-        // Delete lead confirmation
-        $('.delete-lead').on('click', function(e) {
-            e.preventDefault();
-            let deleteUrl = $(this).data('url');
-            Swal.fire({
-                title: 'Confirm Deletion',
-                text: "Are you sure you want to delete this lead?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, Delete',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post(deleteUrl, {
-                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                    }).done(function(response) {
-                        if (response.status === 'success') {
-                            Swal.fire('Deleted!', 'The lead has been deleted.', 'success').then(() => location.reload());
-                        } else {
-                            Swal.fire('Error', 'Failed to delete the lead. Please try again.', 'error');
-                        }
-                    }).fail(function() {
-                        Swal.fire('Error', 'An error occurred. Please try again.', 'error');
-                    });
-                }
+    // Autocomplete for Lead Name
+    new Autocomplete('#autocomplete-lead-name', {
+        search: input => {
+            console.log(input);
+            const url = `/leads/autocomplete/lead-name/?lead_name=${input}`;
+            return new Promise(resolve => {
+                fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    resolve(data.data)
+                });
             });
-        });
+        }
     });
+
+    // Autocomplete for Company Name
+    new Autocomplete('#autocomplete-company-name', {
+        search: input => {
+            const url = `/leads/autocomplete/company-name/?company_name=${input}`;
+            return new Promise(resolve => {
+                fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    resolve(data.data)
+                });
+            });
+        }
+    });
+
+
 </script>
-{% endblock %}
+{% endblock javascripts %}
