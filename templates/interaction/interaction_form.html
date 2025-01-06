@@ -10,14 +10,83 @@
                 </div>
                 <div class="card-body p-3">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    <div class="form-group">
+                        {{ form.contact.label_tag }}
+                        {{ form.contact }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.interaction_type.label_tag }}
+                        {{ form.interaction_type }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.details.label_tag }}
+                        {{ form.details }}
+                    </div>
+                    <div id="datetime-field" class="form-group">
+                        {{ form.interaction_date.label_tag }}
+                        {{ form.interaction_date }}
+                    </div>
+                    <div id="duration-field" class="form-group">
+                        {{ form.duration_minutes.label_tag }}
+                        {{ form.duration_minutes }}
+                    </div>
+
+                    <!-- Order Amount Field -->
+                    <div id="order-amount-field" class="form-group" style="display: none;">
+                        {{ form.order_amount.label_tag }}
+                        {{ form.order_amount }}
+                    </div>
+                    
+                    <div id="currency-field" class="form-group" style="display: none;">
+                        <label for="currency-field">Currency</label>
+                        {{ form.currency }}
+                    </div>
                 </div>
+
                 <div class="card-footer text-center pt-0 px-lg-2 px-1">
                     <button type="submit" class="btn bg-gradient-success">Save Interaction</button>
-                    <a href="{% url 'interaction_list' %}" class="btn btn-magenta ml-2">Cancel</a>
+                    <a href="{% url 'interaction-list' %}" class="btn btn-magenta ml-2">Cancel</a>
                 </div>
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the form fields
+        const interactionTypeField = document.querySelector('#interaction-type');  // Django-generated ID
+        const orderAmountField = document.querySelector('#order-amount-field');  // Wrapper div
+        const durationField = document.querySelector('#duration-field');  // Wrapper div for duration minutes
+        const currencyField = document.querySelector('#currency-field');  // Wrapper div for currency
+
+        // Function to toggle visibility based on interaction type
+        function toggleFields() {
+            const selectedType = interactionTypeField.value;
+
+            if (selectedType === 'order') {
+                orderAmountField.style.display = 'block';  // Show order amount
+                currencyField.style.display = 'block';  // Show currency
+                durationField.style.display = 'none';  // Hide duration minutes
+            } else {
+                orderAmountField.style.display = 'none';  // Hide order amount
+                currencyField.style.display = 'none';  // Hide currency
+                durationField.style.display = 'block';  // Show duration minutes for calls and meetings
+            }
+        }
+
+        // Event listener for interaction type change
+        interactionTypeField.addEventListener('change', toggleFields);
+        toggleFields();  // Initial run on page load
+    });
+
+    // Initialize Flatpickr with minDate set to current time
+    flatpickr(".datetimepicker", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        defaultDate: new Date(),  // Current local time
+    });
+</script>
 {% endblock %}

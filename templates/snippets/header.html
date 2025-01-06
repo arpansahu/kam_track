@@ -86,11 +86,11 @@
           <!-- Tasks -->
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="tasksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Tasks
+              Orders
             </a>
             <ul class="dropdown-menu" aria-labelledby="tasksDropdown">
-              <li><a class="dropdown-item" href="{% url 'task-list' %}">View All Tasks</a></li>
-              {% comment %} <li><a class="dropdown-item" href="{% url 'task-add' %}">Add New Task</a></li> {% endcomment %}
+              <li><a class="dropdown-item" href="{% url 'interaction-list' %}?interaction_type=order">View All Orders</a></li>
+              <li><a class="dropdown-item" href="{% url 'interaction-add' %}?interaction_type=order">Add New Order</a></li>
             </ul>
           </li>
 
@@ -101,7 +101,7 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="meetingsDropdown">
               <li><a class="dropdown-item" href="{% url 'interaction-list' %}?interaction_type=meeting">View Meetings</a></li>
-              <li><a class="dropdown-item" href="{% url 'interaction-add' lead_id='00000000-0000-0000-0000-000000000000' %}">Schedule a Meeting</a></li>
+              <li><a class="dropdown-item" href="{% url 'interaction-add' %}?interaction_type=meeting">Schedule a Meeting</a></li>
             </ul>
           </li>
 
@@ -112,7 +112,7 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="callsDropdown">
               <li><a class="dropdown-item" href="{% url 'interaction-list' %}?interaction_type=call">View Calls</a></li>
-              <li><a class="dropdown-item" href="{% url 'interaction-add' lead_id='00000000-0000-0000-0000-000000000000' %}">Log a Call</a></li>
+              <li><a class="dropdown-item" href="{% url 'interaction-add' %}?interaction_type=call">Schedule a Call</a></li>
             </ul>
           </li>
 

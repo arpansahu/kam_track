@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from django.contrib.auth.decorators import login_required
 from datetime import timedelta
 from lead.models import Lead
-from interaction.models import Interaction, Task
+from interaction.models import Interaction
 
 @login_required
 def dashboard_view(request):
@@ -14,9 +14,9 @@ def dashboard_view(request):
         return render(request, 'dashboard/no_account.html', {'message': 'You are not assigned as a Key Account Manager.'})
 
     # Pending tasks for today or future (uncompleted)
-    pending_tasks = Task.objects.filter(
-        lead__assigned_kam=user, completed=False, due_date__gte=now().date()
-    ).order_by('due_date')
+    # pending_tasks = Task.objects.filter(
+    #     lead__assigned_kam=user, completed=False, due_date__gte=now().date()
+    # ).order_by('due_date')
 
     # Recent interactions from the past 7 days
     recent_interactions = Interaction.objects.filter(
@@ -33,7 +33,7 @@ def dashboard_view(request):
     ).distinct()
 
     context = {
-        'pending_tasks': pending_tasks,
+        'pending_tasks': [],
         'recent_interactions': recent_interactions,
         'well_performing_leads': well_performing_leads,
         'underperforming_leads': underperforming_leads,
