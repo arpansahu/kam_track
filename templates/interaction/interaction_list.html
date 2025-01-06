@@ -1,84 +1,150 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
 <div class="container-fluid py-4">
-    <h2 class="mb-4">Interaction List</h2>
-
-    <!-- Search and Filter Form -->
-    <form method="GET" action="{% url 'interaction-list' %}">
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label for="lead_name">Lead Name</label>
-                <input type="text" class="form-control autocomplete-input" id="lead_name" name="lead_name" placeholder="Search by Lead Name">
-                <ul class="autocomplete-result-list"></ul>
-            </div>
-            <div class="col-md-4">
-                <label for="interaction_type">Interaction Type</label>
-                <select name="interaction_type" id="interaction_type" class="form-select">
-                    <option value="">All Types</option>
-                    <option value="call">Call</option>
-                    <option value="meeting">Meeting</option>
-                    <option value="order">Order</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label for="interaction_date">Date Range</label>
-                <input type="text" class="form-control datetimepicker" name="interaction_date" placeholder="Select Date Range">
-            </div>
+    <div class="col-md-12 mb-lg-0 mb-4">
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{% url 'interaction-add' %}?interaction_type=meeting" class="btn bg-gradient-primary w-auto mx-2">
+                Schedule a Meeting
+            </a>
+            <a href="{% url 'interaction-add' %}?interaction_type=call" class="btn bg-gradient-success w-auto mx-2">
+                Schedule a Call
+            </a>
+            <a href="{% url 'interaction-add' %}?interaction_type=order" class="btn bg-gradient-info w-auto mx-2">
+                Create an Order
+            </a>
         </div>
-        <div class="text-center">
-            <button type="submit" class="btn btn-success">Filter</button>
-        </div>
-    </form>
-
-    <!-- Interaction List Table -->
-    <div class="mt-4">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Lead Name</th>
-                    <th>Interaction Type</th>
-                    <th>Details</th>
-                    <th>Interaction Date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for interaction in interactions %}
-                    <tr>
-                        <td>{{ interaction.lead.name }}</td>
-                        <td>{{ interaction.get_interaction_type_display }}</td>
-                        <td>{{ interaction.details }}</td>
-                        <td>{{ interaction.interaction_date|date:"M d, Y H:i" }}</td>
-                        <td>
-                            <a href="{% url 'interaction-detail' interaction.id %}" class="btn btn-info btn-sm">View</a>
-                            <a href="{% url 'interaction-update' interaction.id %}" class="btn btn-warning btn-sm">Edit</a>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">No interactions found.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
+
+    <!-- Search Filter Form -->
+    <div class="row" style="margin-bottom: 10px">
+        <form method="GET" action="{% url 'interaction-list' %}">
+            <div class="col-md-12 mb-lg-0 mb-4">
+                <div class="card mt-4">
+                    <div class="card-header pb-0 p-3">
+                        <h6 class="mb-0">Filter Interactions</h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <!-- Contact Dropdown -->
+                            <div class="col-md-4 mb-md-0 mb-4">
+                                <label>Contact</label>
+                                <select class="form-select" name="contact">
+                                    <option value="">All Contacts</option>
+                                    {% for contact in contacts %}
+                                        <option value="{{ contact.id }}" {% if contact.id == selected_contact %}selected{% endif %}>
+                                            {{ contact.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Interaction Type Dropdown -->
+                            <div class="col-md-4 mb-md-0 mb-4">
+                                <label>Interaction Type</label>
+                                <select class="form-select" name="interaction_type">
+                                    <option value="">All Types</option>
+                                    <option value="call" {% if interaction_type == 'call' %}selected{% endif %}>Call</option>
+                                    <option value="meeting" {% if interaction_type == 'meeting' %}selected{% endif %}>Meeting</option>
+                                    <option value="order" {% if interaction_type == 'order' %}selected{% endif %}>Order</option>
+                                </select>
+                            </div>
+
+                            <!-- Lead Dropdown -->
+                            <div class="col-md-4 mb-md-0 mb-4">
+                                <label>Lead</label>
+                                <select class="form-select" name="lead">
+                                    <option value="">All Leads</option>
+                                    {% for lead in leads %}
+                                        <option value="{{ lead.id }}" {% if lead.id == selected_lead %}selected{% endif %}>
+                                            {{ lead.name }} ({{ lead.company_name }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Scheduled Date -->
+                            <div class="col-md-4 mb-md-0 mb-4">
+                                <label>Scheduled After</label>
+                                <input class="form-control datetimepicker" name="start_date" placeholder="Start Date" value="{{ start_date }}">
+                            </div>
+
+                            <!-- End Date -->
+                            <div class="col-md-4 mb-md-0 mb-4">
+                                <label>Scheduled Before</label>
+                                <input class="form-control datetimepicker" name="end_date" placeholder="End Date" value="{{ end_date }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search Button -->
+                    <div class="card-body p-3 text-center">
+                        <input type="submit" value="Search" class="btn bg-gradient-success w-auto">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Interaction Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Interaction List</h6>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">Contact</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">Interaction Type</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">Details</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder">Scheduled Date</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder">Lead</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for interaction in interactions %}
+                                    <tr>
+                                        <td>{{ interaction.contact.name }}</td>
+                                        <td>
+                                            <span class="badge {% if interaction.interaction_type == 'order' %}bg-gradient-info{% else %}bg-gradient-secondary{% endif %}">
+                                                {{ interaction.get_interaction_type_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ interaction.details }}</td>
+                                        <td class="text-center">{{ interaction.interaction_date|date:"M d, Y H:i" }}</td>
+                                        <td class="text-center">{{ interaction.contact.lead.name }}</td>
+                                        <td class="text-center">
+                                            <a href="{% url 'interaction-detail' interaction.id %}" class="btn btn-info btn-sm">View</a>
+                                            <a href="{% url 'interaction-update' interaction.id %}" class="btn btn-warning btn-sm">Edit</a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">No interactions found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% include 'includes/pagination.html' %}
 </div>
 {% endblock %}
 
 {% block javascripts %}
-<script src="{% static 'js/autocomplete.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    new Autocomplete('#lead_name', {
-        search: input => {
-            const url = "{% url 'autocomplete-lead-name' %}?lead_name=" + input;
-            return fetch(url).then(res => res.json()).then(data => data.data);
-        }
-    });
-
     flatpickr(".datetimepicker", {
-        mode: "range",
         enableTime: true,
         dateFormat: "Y-m-d H:i",
     });

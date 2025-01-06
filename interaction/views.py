@@ -11,17 +11,51 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
+from lead.models import Lead
 
 
 # Interaction List View
-class InteractionListView(ListView):
+class InteractionListView(LoginRequiredMixin, ListView):
     model = Interaction
-    template_name = 'interaction/interaction-list.html'
+    template_name = 'interaction/interaction_list.html'
     context_object_name = 'interactions'
     paginate_by = 10
 
     def get_queryset(self):
-        return Interaction.objects.filter(is_deleted=False).order_by('-interaction_date')
+        queryset = Interaction.objects.filter(contact__contact_owner=self.request.user).order_by('-interaction_date')
+        contact_id = self.request.GET.get('contact', '')
+        interaction_type = self.request.GET.get('interaction_type', '')
+        lead_id = self.request.GET.get('lead', '')
+        start_date = self.request.GET.get('start_date', '')
+        end_date = self.request.GET.get('end_date', '')
+
+        if contact_id:
+            queryset = queryset.filter(contact_id=contact_id)
+
+        if interaction_type:
+            queryset = queryset.filter(interaction_type=interaction_type)
+
+        if lead_id:
+            queryset = queryset.filter(contact__lead_id=lead_id)
+
+        if start_date:
+            queryset = queryset.filter(interaction_date__gte=parse_datetime(start_date))
+        if end_date:
+            queryset = queryset.filter(interaction_date__lte=parse_datetime(end_date))
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['contacts'] = Contact.objects.filter(contact_owner=self.request.user)
+        context['leads'] = Lead.objects.filter(assigned_kam=self.request.user)
+        context['selected_contact'] = self.request.GET.get('contact', '')
+        context['interaction_type'] = self.request.GET.get('interaction_type', '')
+        context['selected_lead'] = self.request.GET.get('lead', '')
+        context['start_date'] = self.request.GET.get('start_date', '')
+        context['end_date'] = self.request.GET.get('end_date', '')
+        return context
 
 # Interaction Create View
 class InteractionCreateView(View):
