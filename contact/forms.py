@@ -23,13 +23,6 @@ class ContactForm(forms.ModelForm):
         else:
             self.fields['lead'].queryset = Lead.objects.none()  # Empty queryset if no user
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        contact_id = self.instance.pk  # Get the current contact's ID during update
-        if email and Contact.objects.filter(email=email).exclude(pk=contact_id).exists():
-            raise forms.ValidationError("A contact with this email address already exists.")
-        return email
-
     def clean_lead(self):
         lead = self.cleaned_data.get('lead')
         if not lead:

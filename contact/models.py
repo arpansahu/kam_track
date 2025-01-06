@@ -31,8 +31,6 @@ class Contact(AbstractBaseModel):
         'lead.Lead',  # String reference to avoid circular import
         on_delete=models.CASCADE,
         related_name='lead_contacts',
-        null=True,
-        blank=True
     )
 
     def clean_phone_number(self):
