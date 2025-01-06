@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 from .models import Contact
@@ -5,11 +6,15 @@ from django.http import JsonResponse
 from lead.models import Lead
 from .forms import ContactForm
 import logging
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404
+
 
 logger = logging.getLogger('django')
 
 # List all contacts
-class ContactListView(ListView):
+class ContactListView(LoginRequiredMixin, ListView):
     model = Contact
     template_name = 'contact/contact_list.html'
     context_object_name = 'contacts'
@@ -39,14 +44,20 @@ class ContactListView(ListView):
         context['lead_name'] = self.request.GET.get('lead_name', '')
         return context
 
+
 # Detail view for a contact
-class ContactDetailView(DetailView):
+class ContactDetailView(LoginRequiredMixin, DetailView):
     model = Contact
     template_name = 'contact/contact_detail.html'
     context_object_name = 'contact'
 
+    def get_queryset(self):
+        # Restrict to contacts owned by the logged-in user
+        return Contact.objects.filter(contact_owner=self.request.user)
 
-class ContactCreateView(CreateView):
+
+# Create a new contact
+class ContactCreateView(LoginRequiredMixin, CreateView):
     model = Contact
     form_class = ContactForm
     template_name = 'contact/contact_form.html'
@@ -61,13 +72,17 @@ class ContactCreateView(CreateView):
         kwargs['user'] = self.request.user  # Pass the user to the form
         return kwargs
 
+
 # Update contact details
-class ContactUpdateView(UpdateView):
+class ContactUpdateView(LoginRequiredMixin, UpdateView):
     model = Contact
     form_class = ContactForm
     template_name = 'contact/contact_form.html'
     success_url = reverse_lazy('contact-list')
 
+    def get_queryset(self):
+        # Restrict updates to contacts owned by the logged-in user
+        return Contact.objects.filter(contact_owner=self.request.user)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -76,12 +91,15 @@ class ContactUpdateView(UpdateView):
 
 
 # Delete contact
-class ContactDeleteView(DeleteView):
-    model = Contact
-    template_name = 'contact/contact_confirm_delete.html'
-    success_url = reverse_lazy('contact-list')
-
-# Autocomplete for Contact Role
+@login_required
+@require_POST  # Ensure only POST requests are accepted
+def delete_contact(request, pk):
+    contact = get_object_or_404(Contact, pk=pk, contact_owner=request.user)
+    contact.delete()
+    return JsonResponse({'status': 'success', 'message': 'Contact deleted successfully'}, status=200)
+        
+# Autocomplete for Contact Name
+@login_required
 def autocomplete_contact_name(request):
     query = request.GET.get('contact_name')
     logger.info(f"Searching Contact by name {query}.")
@@ -94,6 +112,7 @@ def autocomplete_contact_name(request):
     return JsonResponse({'status': 200, 'data': payload})
 
 # Autocomplete for Role Name
+@login_required
 def autocomplete_role_name(request):
     query = request.GET.get('role')
     logger.info(f"Searching Contact by role {query}.")
@@ -105,8 +124,8 @@ def autocomplete_role_name(request):
     payload = list(set(payload))
     return JsonResponse({'status': 200, 'data': payload})
 
-
 # Autocomplete for Lead Name
+@login_required
 def autocomplete_lead_name(request):
     query = request.GET.get('lead_name')
     logger.info(f"Searching Contact by role {query}.")

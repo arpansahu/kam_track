@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    ContactListView, ContactCreateView, ContactDetailView, ContactUpdateView, ContactDeleteView,
+    ContactListView, ContactCreateView, ContactDetailView, ContactUpdateView, delete_contact,
     autocomplete_contact_name, autocomplete_lead_name, autocomplete_role_name
 )
 
@@ -9,7 +9,7 @@ urlpatterns = [
     path('add/', ContactCreateView.as_view(), name='contact-add'),
     path('<uuid:pk>/', ContactDetailView.as_view(), name='contact-detail'),
     path('<uuid:pk>/update/', ContactUpdateView.as_view(), name='contact-update'),
-    path('<uuid:pk>/delete/', ContactDeleteView.as_view(), name='contact-delete'),
+    path('<uuid:pk>/delete/', delete_contact, name='contact-delete'),
     
     # Autocomplete Endpoints
     path('autocomplete/contact-name/', autocomplete_contact_name, name='autocomplete-contact-name'),
