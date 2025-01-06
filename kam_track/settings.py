@@ -98,6 +98,7 @@ INSTALLED_APPS = [
     'interaction',
     'performance',
     'dashboard',
+    'contact'
 ]
 
 MIDDLEWARE = [

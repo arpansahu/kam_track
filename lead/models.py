@@ -1,7 +1,7 @@
 from account.models import Account
 from kam_track.models import AbstractBaseModel
 from django.db import models
-
+from contact.models import Contact
 
 class Lead(AbstractBaseModel):
     name = models.CharField(max_length=255)
@@ -14,15 +14,7 @@ class Lead(AbstractBaseModel):
     def __str__(self):
         return f"{self.name} ({self.company_name})"
 
-class Contact(AbstractBaseModel):
-    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='contacts')
-    name = models.CharField(max_length=100)
-    role = models.CharField(max_length=100)
-    email = models.EmailField(blank=True)
-    phone_number = models.CharField(max_length=15, blank=True)
 
-    def __str__(self):
-        return f"{self.name} - {self.role}"
 
 class Order(AbstractBaseModel):
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='orders')

@@ -56,15 +56,65 @@
     </div>
     <div class="navbar-right">
       <ul class="navbar-nav">
-        {% if request.user.is_admin %}
-          <li class="nav-item">
-            <a href="{% url 'proxy-container' %}">Admin Panel</a>
-          </li>
-        {% endif %}
         {% if request.user.is_authenticated %}
-          {% comment %} <li class="nav-item">
-            <a href="{% url 'dashboard' %}">Dashboard</a>
-          </li> {% endcomment %}
+          <!-- Dashboard Link -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+          </li>
+
+          <!-- Leads -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="leadsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Leads
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="leadsDropdown">
+              <li><a class="dropdown-item" href="{% url 'lead-list' %}">View All Leads</a></li>
+              <li><a class="dropdown-item" href="{% url 'lead-add' %}">Add New Lead</a></li>
+            </ul>
+          </li>
+
+          <!-- Contacts -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="contactsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Contacts
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="contactsDropdown">
+              <li><a class="dropdown-item" href="{% url 'contact-list' %}">View Contacts</a></li>
+            </ul>
+          </li>
+
+          <!-- Tasks -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="tasksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Tasks
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="tasksDropdown">
+              <li><a class="dropdown-item" href="{% url 'task-list' %}">View All Tasks</a></li>
+              {% comment %} <li><a class="dropdown-item" href="{% url 'task-add' %}">Add New Task</a></li> {% endcomment %}
+            </ul>
+          </li>
+
+          <!-- Meetings -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="meetingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Meetings
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="meetingsDropdown">
+              <li><a class="dropdown-item" href="{% url 'interaction-list' %}?interaction_type=meeting">View Meetings</a></li>
+              <li><a class="dropdown-item" href="{% url 'interaction-add' lead_id='00000000-0000-0000-0000-000000000000' %}">Schedule a Meeting</a></li>
+            </ul>
+          </li>
+
+          <!-- Calls -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="callsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Calls
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="callsDropdown">
+              <li><a class="dropdown-item" href="{% url 'interaction-list' %}?interaction_type=call">View Calls</a></li>
+              <li><a class="dropdown-item" href="{% url 'interaction-add' lead_id='00000000-0000-0000-0000-000000000000' %}">Log a Call</a></li>
+            </ul>
+          </li>
 
           <!-- "More" Dropdown Menu -->
           <li class="nav-item dropdown">
@@ -73,8 +123,6 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <li><a class="dropdown-item" href="{% url 'account' %}">Profile</a></li>
-              {% comment %} <li><a class="dropdown-item" href="{% url 'order_list' %}">Orders</a></li>
-              <li><a class="dropdown-item" href="{% url 'billing_address' %}">Billing Address</a></li> {% endcomment %}
             </ul>
           </li>
 
@@ -83,8 +131,9 @@
               <span class="d-sm-inline d-none">Sign Out</span>
             </a>
           </li>
-        {% endif %}
-        {% if not request.user.is_authenticated %}
+
+        {% else %}
+          <!-- Authentication Links -->
           <li class="nav-item">
             <a href="{% url 'login' %}" class="nav-link text-body font-weight-bold px-0">
               <span class="d-sm-inline d-none">Sign In</span>

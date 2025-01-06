@@ -94,10 +94,10 @@
                                         <td class="text-center">{{ lead.created|date:"M d, Y H:i" }}</td>
                                         <td class="text-center">
                                             <a href="{% url 'lead-detail' lead.id %}" class="btn btn-info btn-sm">View</a>
-                                            <a href="{% url 'lead-edit' lead.id %}" class="btn btn-warning btn-sm">Edit</a>
-                                            <button type="button" class="btn btn-danger btn-sm delete-lead" data-id="{{ lead.id }}" data-url="{% url 'lead-delete' lead.id %}">
+                                            <a href="{% url 'lead-update' lead.id %}" class="btn btn-warning btn-sm">Edit</a>
+                                            {% comment %} <button type="button" class="btn btn-danger btn-sm delete-lead" data-id="{{ lead.id }}" data-url="{% url 'lead-delete' lead.id %}">
                                                 Delete
-                                            </button>
+                                            </button> {% endcomment %}
                                         </td>
                                     </tr>
                                 {% endfor %}

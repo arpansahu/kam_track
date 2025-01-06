@@ -13,7 +13,7 @@ from django.http import JsonResponse
 # List all leads
 class LeadListView(ListView):
     model = Lead
-    template_name = 'lead/lead_list.html'
+    template_name = 'lead/lead-list.html'
     context_object_name = 'leads'
     paginate_by = 10
 
@@ -26,7 +26,7 @@ class LeadCreateView(CreateView):
     model = Lead
     form_class = LeadForm
     template_name = 'lead/lead_form.html'
-    success_url = reverse_lazy('lead_list')
+    success_url = reverse_lazy('lead-list')
 
     def form_valid(self, form):
         form.instance.assigned_kam = self.request.user
@@ -39,7 +39,7 @@ class LeadUpdateView(UpdateView):
     model = Lead
     form_class = LeadForm
     template_name = 'lead/lead_form.html'
-    success_url = reverse_lazy('lead_list')
+    success_url = reverse_lazy('lead-list')
 
     def form_valid(self, form):
         messages.success(self.request, "Lead updated successfully!")
